@@ -7,6 +7,9 @@ public class PlayerLength : NetworkBehaviour
     [SerializeField] private GameObject tailPrefab;
 
     public NetworkVariable<ushort> length = new(1);
+
+    public static event System.Action<ushort> ChangedLengthEvent;
+
     private List<GameObject> _tails;
     private Transform _lastTail;
     private Collider2D _collider2D;
@@ -17,7 +20,7 @@ public class PlayerLength : NetworkBehaviour
         _tails = new List<GameObject>();
         _lastTail = transform;
         _collider2D = GetComponent<Collider2D>();
-        if (!IsServer) length.OnValueChanged += LengthChanged;
+        if (!IsServer) length.OnValueChanged += LengthChangedEvent;
     }
 
     // Called by server
@@ -25,13 +28,22 @@ public class PlayerLength : NetworkBehaviour
     public void AddLength()
     {
         length.Value += 1;
-        InstantiateTail();
+        LengthChanged();
     }
 
-    private void LengthChanged(ushort previousValue, ushort newValue)
+    private void LengthChanged()
+    {
+        InstantiateTail();
+
+        if (!IsOwner) return;
+        ChangedLengthEvent?.Invoke(length.Value);
+        ClientMusicPlayer.Instance.PlayChompAudioClip();
+    }
+
+    private void LengthChangedEvent(ushort previousValue, ushort newValue)
     {
         Debug.Log("Length Changed: Callback");
-        InstantiateTail();
+        LengthChanged();
     }
 
     private void InstantiateTail()

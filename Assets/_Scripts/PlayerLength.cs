@@ -24,11 +24,26 @@ public class PlayerLength : NetworkBehaviour
     }
 
     // Called by server
-    [ContextMenu("Add Length")]
     public void AddLength()
     {
         length.Value += 1;
         LengthChanged();
+    }
+
+    public override void OnNetworkDespawn()
+    {
+        base.OnNetworkDespawn();
+        DestroyTails();
+    }
+
+    private void DestroyTails()
+    {
+        while (_tails.Count != 0)
+        {
+            GameObject tail = _tails[0];
+            _tails.RemoveAt(0);
+            Destroy(tail);
+        }
     }
 
     private void LengthChanged()

@@ -21,6 +21,12 @@ public class PlayerLength : NetworkBehaviour
         _lastTail = transform;
         _collider2D = GetComponent<Collider2D>();
         if (!IsServer) length.OnValueChanged += LengthChangedEvent;
+
+        if (IsOwner) return;
+        for (int i = 0; i < length.Value - 1; ++i)
+        {
+            InstantiateTail();
+        }
     }
 
     // Called by server

@@ -15,6 +15,7 @@ public class FoodSpawner : MonoBehaviour
 
     private void SpawnFoodStart()
     {
+        Debug.Log("SpawnFoodStart");
         NetworkManager.Singleton.OnServerStarted -= SpawnFoodStart;
         //NetworkObjectPool.Singleton.InitializePool();
 
@@ -28,6 +29,7 @@ public class FoodSpawner : MonoBehaviour
 
     private void SpawnFood()
     {
+        Debug.Log("Spawning Food");
         NetworkObject obj = NetworkObjectPool.Singleton.GetNetworkObject(prefab, GetRandomPositionOnMap(), Quaternion.identity);
         obj.GetComponent<Food>().prefab = prefab;
         if (!obj.IsSpawned) obj.Spawn(true);
@@ -44,9 +46,15 @@ public class FoodSpawner : MonoBehaviour
         {
             yield return _waitForSeconds;
 
+            Debug.Log("SpawnOverTime: Attempting food spawn...");
+
             if (NetworkObjectPool.Singleton.GetCurrentPrefabCount(prefab) < MaxPrefabCount)
             {
                 SpawnFood();
+            }
+            else
+            {
+                Debug.Log("Too many foods spawned already. Skipping spawn.");
             }
         }
     }

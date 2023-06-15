@@ -82,4 +82,11 @@ public class PlayerLength : NetworkBehaviour
 
         _tails.Add(tailGameObject);
     }
+
+    public void AddLengthServer()
+    {
+        if (!IsServer) return;
+        length.Value += 1;
+        LengthChanged();
+    }
 }

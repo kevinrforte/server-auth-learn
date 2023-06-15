@@ -103,7 +103,7 @@ public class NetworkObjectPool : NetworkBehaviour
 
     public int GetCurrentPrefabCount(GameObject prefab)
     {
-        return m_PooledObjects[prefab].CountInactive;
+        return m_PooledObjects[prefab].CountActive;
     }
 
     /// <summary>

@@ -1,12 +1,24 @@
+using System.Collections;
 using Unity.Netcode;
 using UnityEngine;
 
 public class ConnectionApprovalHandler : MonoBehaviour
 {
-    private const int MaxPlayers = 8;
+    public static int MaxPlayers = 8;
 
-    private void Start()
+    //private void Awake()
+    //{
+    //    NetworkManager.Singleton.ConnectionApprovalCallback += ApprovalCheck;
+    //}
+
+    private void OnEnable()
     {
+        StartCoroutine(SubscribeToNetworkManagerEvents());
+    }
+
+    IEnumerator SubscribeToNetworkManagerEvents()
+    {
+        yield return new WaitUntil(() => NetworkManager.Singleton);
         NetworkManager.Singleton.ConnectionApprovalCallback += ApprovalCheck;
     }
 

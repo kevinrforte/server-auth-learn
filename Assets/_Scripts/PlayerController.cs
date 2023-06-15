@@ -69,7 +69,7 @@ public class PlayerController : NetworkBehaviour
         Vector3 mouseWorldCoordinates = _mainCamera.ScreenToWorldPoint(_mouseInput);
         mouseWorldCoordinates.z = 0f;
 
-        transform.position = Vector3.MoveTowards(transform.position, mouseWorldCoordinates, Time.deltaTime * speed);
+        transform.position = Vector3.MoveTowards(transform.position, mouseWorldCoordinates, NetworkManager.Singleton.ServerTime.FixedDeltaTime * speed);
 
         // Rotate
         if (mouseWorldCoordinates != transform.position)
@@ -85,16 +85,21 @@ public class PlayerController : NetworkBehaviour
     {
         if (player1.length > player2.length)
         {
-            WinInformationServerRpc(player1.id, player2.id);
+            WinInformation(player1.id, player2.id);
         }
         else
         {
-            WinInformationServerRpc(player2.id, player1.id);
+            WinInformation(player2.id, player1.id);
         }
     }
 
     [ServerRpc]
     private void WinInformationServerRpc(ulong winner, ulong loser)
+    {
+        WinInformation(winner, loser);
+    }
+
+    private void WinInformation(ulong winner, ulong loser)
     {
         _targetClientsArray[0] = winner;
         ClientRpcParams clientRpcParams = new ClientRpcParams
